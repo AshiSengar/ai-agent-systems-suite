@@ -3,11 +3,28 @@ const { createPlan } = require("./planner");
 const { interviewPrep } = require("./skills");
 
 const LOG_FILE = "agent-log.txt";
+const MESSAGE_FILE = "agent-messages.txt";
 
 // Load Memory
 let memory = JSON.parse(
   fs.readFileSync("memory.json", "utf8")
 );
+
+// Create completedTasks if missing
+if (!memory.completedTasks) {
+  memory.completedTasks = [];
+}
+
+// Agent Communication
+function sendAgentMessage(message) {
+  fs.appendFileSync(
+    MESSAGE_FILE,
+    `[${new Date().toISOString()}] ${message}\n`
+  );
+
+  console.log("\nAGENT MESSAGE:");
+  console.log(message);
+}
 
 console.log("=== HERMES AGENT ===");
 
@@ -25,7 +42,7 @@ plan.forEach((step, index) => {
   console.log(`${index + 1}. ${step}`);
 });
 
-// Automatic Skill Trigger
+// Skill Trigger
 console.log("\n=== SKILL OUTPUT ===");
 
 if (
@@ -34,9 +51,24 @@ if (
     .includes("interview")
 ) {
   console.log(interviewPrep());
+
+  sendAgentMessage(
+    "Interview Preparation Skill Completed"
+  );
 } else {
   console.log("No matching skill found");
 }
+
+// Learning Loop
+memory.completedTasks.push({
+  task: memory.lastTask,
+  completedAt: new Date().toISOString()
+});
+
+console.log(
+  "\nCompleted Tasks:",
+  memory.completedTasks.length
+);
 
 // Update Memory
 memory.lastRun = new Date().toISOString();
@@ -46,22 +78,29 @@ fs.writeFileSync(
   JSON.stringify(memory, null, 2)
 );
 
-// Create Log Entry
+// Agent Log
 fs.appendFileSync(
   LOG_FILE,
   `[${new Date().toISOString()}] Hermes executed successfully\n`
 );
 
 // Status Report
-console.log("\n=== AUTONOMOUS STATUS REPORT ===");
+console.log("\n=== STATUS REPORT ===");
 console.log("User:", memory.userName);
 console.log("Current Task:", memory.lastTask);
 console.log("Status: Completed");
 
-// Safe Exit
-console.log("\nScheduler Started... (Demo Mode)");
+// Demo Scheduler
+console.log("\n=== AUTONOMOUS CHECK ===");
 
 setTimeout(() => {
-  console.log("\nFORCED STOP - DEBUG MODE");
+  console.log("\nChecking previous executions...");
+  console.log(
+    "Tasks completed:",
+    memory.completedTasks.length
+  );
+
+  console.log("\nFORCED STOP - DEMO MODE");
   process.exit(0);
-}, 3000);
+
+}, 5000);
