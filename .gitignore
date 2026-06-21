@@ -1,2 +1,6 @@
-node_modules/
+node_modules
 .env
+*.log
+memory.json
+agent-log.txt
+agent-messages.txt
