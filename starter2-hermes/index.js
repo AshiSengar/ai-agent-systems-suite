@@ -1,5 +1,6 @@
 const fs = require("fs");
 const axios = require("axios");
+const http = require("http");
 const { createPlan } = require("./planner");
 const { interviewPrep } = require("./skills");
 
@@ -40,7 +41,7 @@ function sendAgentMessage(message) {
 // Slack Communication
 async function sendSlackMessage(message) {
   if (!SLACK_WEBHOOK) {
-    console.log(" Slack webhook not set. Skipping Slack message.");
+    console.log("⚠️ Slack webhook not set. Skipping Slack message.");
     return;
   }
 
@@ -100,10 +101,7 @@ console.log("\nCompleted Tasks:", memory.completedTasks.length);
 // Update Memory
 memory.lastRun = new Date().toISOString();
 
-fs.writeFileSync(
-  "memory.json",
-  JSON.stringify(memory, null, 2)
-);
+fs.writeFileSync("memory.json", JSON.stringify(memory, null, 2));
 
 // Log
 fs.appendFileSync(
@@ -119,7 +117,7 @@ console.log("Status: Completed");
 
 // Slack Status
 sendSlackMessage(
-  `Hermes Status:
+`Hermes Status:
 User: ${memory.userName || "Unknown"}
 Task: ${memory.lastTask || "None"}
 Status: Completed`
@@ -132,9 +130,19 @@ setTimeout(() => {
   console.log("Tasks completed:", memory.completedTasks.length);
 
   sendSlackMessage(
-    `Hermes Autonomous Check:
+`Hermes Autonomous Check:
 Tasks Completed: ${memory.completedTasks.length}`
   );
 
   console.log("\nAGENT FINISHED EXECUTION (RENDER SAFE MODE)");
 }, 5000);
+
+//  Render Server (IMPORTANT FIX)
+const PORT = process.env.PORT || 3000;
+
+http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("Hermes Agent Running");
+}).listen(PORT, () => {
+  console.log("Server running on port " + PORT);
+});
