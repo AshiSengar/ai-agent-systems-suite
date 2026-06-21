@@ -6,15 +6,22 @@ const { interviewPrep } = require("./skills");
 const LOG_FILE = "agent-log.txt";
 const MESSAGE_FILE = "agent-messages.txt";
 
-// 🔐 SAFE: use environment variable instead of hardcoding secret
+// 🔐 SAFE: use environment variable
 const SLACK_WEBHOOK = process.env.SLACK_WEBHOOK;
 
-// Load Memory
-let memory = JSON.parse(
-  fs.readFileSync("memory.json", "utf8")
-);
+// Load Memory (SAFE)
+let memory = {};
+try {
+  memory = JSON.parse(fs.readFileSync("memory.json", "utf8"));
+} catch (err) {
+  memory = {
+    userName: "User",
+    lastTask: "interview prep",
+    completedTasks: []
+  };
+}
 
-// Create completedTasks if missing
+// Ensure completedTasks exists
 if (!memory.completedTasks) {
   memory.completedTasks = [];
 }
@@ -33,17 +40,13 @@ function sendAgentMessage(message) {
 // Slack Communication
 async function sendSlackMessage(message) {
   if (!SLACK_WEBHOOK) {
-    console.log("Slack webhook not set. Skipping Slack message.");
+    console.log(" Slack webhook not set. Skipping Slack message.");
     return;
   }
 
   try {
-    await axios.post(SLACK_WEBHOOK, {
-      text: message
-    });
-
+    await axios.post(SLACK_WEBHOOK, { text: message });
     console.log("SLACK MESSAGE SENT");
-
   } catch (error) {
     console.log("Slack Error:", error.message);
   }
@@ -53,13 +56,19 @@ console.log("=== HERMES AGENT ===");
 
 // Memory Recall
 console.log("\n=== MEMORY RECALL ===");
-console.log("User:", memory.userName);
-console.log("Last Task:", memory.lastTask);
+console.log("User:", memory.userName || "Unknown");
+console.log("Last Task:", memory.lastTask || "None");
 
 // Planning
 console.log("\n=== PLAN ===");
 
-const plan = createPlan(memory.lastTask);
+let plan = [];
+try {
+  plan = createPlan(memory.lastTask || "");
+} catch (err) {
+  console.log("Plan error:", err.message);
+  plan = ["No plan generated"];
+}
 
 plan.forEach((step, index) => {
   console.log(`${index + 1}. ${step}`);
@@ -75,16 +84,14 @@ if (
   console.log(interviewPrep());
 
   sendAgentMessage("Interview Preparation Skill Completed");
-
   sendSlackMessage("Hermes Agent: Interview Preparation Skill Completed");
-
 } else {
   console.log("No matching skill found");
 }
 
 // Learning Loop
 memory.completedTasks.push({
-  task: memory.lastTask,
+  task: memory.lastTask || "unknown task",
   completedAt: new Date().toISOString()
 });
 
@@ -106,37 +113,28 @@ fs.appendFileSync(
 
 // Status Report
 console.log("\n=== STATUS REPORT ===");
-console.log("User:", memory.userName);
-console.log("Current Task:", memory.lastTask);
+console.log("User:", memory.userName || "Unknown");
+console.log("Current Task:", memory.lastTask || "None");
 console.log("Status: Completed");
 
 // Slack Status
 sendSlackMessage(
-`Hermes Status:
-User: ${memory.userName}
-Task: ${memory.lastTask}
+  `Hermes Status:
+User: ${memory.userName || "Unknown"}
+Task: ${memory.lastTask || "None"}
 Status: Completed`
 );
 
-// Demo Scheduler
 console.log("\n=== AUTONOMOUS CHECK ===");
 
 setTimeout(() => {
-
   console.log("\nChecking previous executions...");
-
-  console.log(
-    "Tasks completed:",
-    memory.completedTasks.length
-  );
+  console.log("Tasks completed:", memory.completedTasks.length);
 
   sendSlackMessage(
-`Hermes Autonomous Check:
+    `Hermes Autonomous Check:
 Tasks Completed: ${memory.completedTasks.length}`
   );
 
-  console.log("\nFORCED STOP - DEMO MODE");
-
-  process.exit(0);
-
+  console.log("\nAGENT FINISHED EXECUTION (RENDER SAFE MODE)");
 }, 5000);
