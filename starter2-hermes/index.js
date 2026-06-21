@@ -2,31 +2,65 @@ const fs = require("fs");
 const { createPlan } = require("./planner");
 const { interviewPrep } = require("./skills");
 
-let memory = JSON.parse(fs.readFileSync("memory.json", "utf8"));
+const LOG_FILE = "agent-log.txt";
+
+// Load Memory
+let memory = JSON.parse(
+  fs.readFileSync("memory.json", "utf8")
+);
 
 console.log("=== HERMES AGENT ===");
 
-console.log("\nMemory Recall:");
+// Memory Recall
+console.log("\n=== MEMORY RECALL ===");
 console.log("User:", memory.userName);
 console.log("Last Task:", memory.lastTask);
 
-console.log("\nPlan:");
+// Planning
+console.log("\n=== PLAN ===");
+
 const plan = createPlan(memory.lastTask);
+
 plan.forEach((step, index) => {
   console.log(`${index + 1}. ${step}`);
 });
 
-console.log("\nSkill Output:");
-console.log(interviewPrep());
+// Automatic Skill Trigger
+console.log("\n=== SKILL OUTPUT ===");
 
+if (
+  memory.lastTask
+    .toLowerCase()
+    .includes("interview")
+) {
+  console.log(interviewPrep());
+} else {
+  console.log("No matching skill found");
+}
+
+// Update Memory
+memory.lastRun = new Date().toISOString();
+
+fs.writeFileSync(
+  "memory.json",
+  JSON.stringify(memory, null, 2)
+);
+
+// Create Log Entry
+fs.appendFileSync(
+  LOG_FILE,
+  `[${new Date().toISOString()}] Hermes executed successfully\n`
+);
+
+// Status Report
 console.log("\n=== AUTONOMOUS STATUS REPORT ===");
 console.log("User:", memory.userName);
 console.log("Current Task:", memory.lastTask);
-console.log("Status: Completed (Test Mode)");
+console.log("Status: Completed");
 
-console.log("\nScheduler Started... (disabled for now)");
+// Safe Exit
+console.log("\nScheduler Started... (Demo Mode)");
 
-// SAFE DEBUG STOP (only for testing)
 setTimeout(() => {
   console.log("\nFORCED STOP - DEBUG MODE");
   process.exit(0);
