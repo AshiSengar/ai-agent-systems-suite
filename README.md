@@ -2,116 +2,91 @@
 
 ## 📌 Overview
 
-This project is a modular Node.js-based system that demonstrates a simple AI-agent style workflow using planning, execution, and memory handling.
+AI Agent Systems Suite is a modular Node.js based AI agent system that demonstrates a planner + execution architecture.
 
-It is built using two starter components:
-
-- Starter 1: OpenClaw (Execution Layer)
-- Starter 2: Hermes (Planning Layer)
-
-The system follows a structured pipeline where input is processed, broken into steps, executed, and stored with context.
-
----
-
-## 🧠 System Architecture
-
-### 🔵 Starter 2 — Hermes (Planner Layer)
-- Handles input interpretation and planning
-- Breaks tasks into structured steps
-- Coordinates overall workflow logic
-
-### 🟢 Starter 1 — OpenClaw (Execution Layer)
-- Executes logic defined by planner
-- Runs modular skill-based functions
-- Returns processed output
-
----
-
-## ⚙️ Tech Stack
-
-- Node.js
-- JavaScript (ES6)
-- JSON (Memory storage)
-- File-based modular system
-
----
-
-## 🔄 Workflow
-
-Input → Planner (Hermes) → Skills Execution (OpenClaw) → Memory → Output
+It takes user input, breaks it into structured steps, executes those steps using skill modules, and maintains lightweight memory for context tracking across runs.
 
 ---
 
 ## 📁 Project Structure
 
-ai-agent-systems-suite
+ai-agent-systems-suite/
 
-├── starter2-hermes
-│   ├── index.js
-│   ├── planner.js
-│   ├── skills.js
-│   ├── memory.json
-│   └── skills
+├── 🧠 starter2-hermes 
+    ├── index.js  
+│   ├── planner.js  
+│   ├── skills.js  
+│   ├── memory.json  
+│   ├── agent-log.txt  
+│   ├── agent-messages.txt  
 
-├── starter1-openclaw
-│   └── execution logic
+├── ⚡ starter1-openclaw 
+   ├── index.js  
 
-└── README.md
-
----
-
-## 🧩 Core Modules
-
-### planner.js
-Responsible for breaking input into structured steps for execution.
-
-### skills.js
-Executes logic based on planned steps.
-
-### memory.json
-Stores simple contextual memory and retrieves previous state.
+├──  package.json  
+├──  package-lock.json  
+├──  README.md  
 
 ---
 
-## 💾 Memory System
+## ⚙️ Architecture
 
-This system uses a file-based memory approach.
+### 🧠 Hermes (Planner Layer)
+- Input analyze karta hai  
+- Task ko structured steps me break karta hai  
+- Execution plan generate karta hai  
 
-Example:
+### ⚡ OpenClaw (Execution Layer)
+- Planner ke steps execute karta hai  
+- Skills modules ko run karta hai  
+- Final output generate karta hai  
 
-Input: "My name is Ashi"
-→ stored in memory.json
+### 🧩 Skills Layer
+- Task-specific logic handle karta hai  
+- Reusable functional modules provide karta hai  
+- Handles:
+  - Interview preparation  
+  - Text processing  
+  - Memory update  
+  - Response generation
 
-Input: "What is my name?"
-→ retrieved from memory
-→ output: stored value
+### 🛠 Tech Stack
+ Node.js — runtime environment
+ JavaScript (ES6+) — core logic
+ File System (fs module) — file handling
+ JSON — lightweight memory storage
+ Axios — API / webhook communication
+ Modular architecture — planner + executor separation
+
+### 🧩 Features
+ AI-style planner system
+ Execution engine separation
+ Modular skill-based architecture
+ Persistent memory system
+ Structured workflow pipeline
+ Easy to extend and scale
+ Context-aware responses (via memory)
+
+### 💾 Memory Layer
+- System context store karta hai  
+- Tracks:
+  - User name  
+  - Last task  
+  - Completed task history  
 
 ---
 
-## ⚙️ Skills System
+## 🔄 Workflow
 
-Skills are simple modular functions that execute based on input type.
-
-Examples:
-- Greeting handling
-- Text parsing
-- Basic transformation logic
-- Memory read/write operations
-
-Each skill:
-- Takes input from planner
-- Processes logic independently
-- Returns output
+User Input → Hermes Planner → Task Breakdown → OpenClaw Execution → Skills Processing → Memory Update → Output Generation  
 
 ---
 
-## 🔗 Agent Interaction Model
+## 🧠 Memory Example
 
-- Hermes handles planning and task breakdown
-- OpenClaw handles execution of tasks
-- Planner ensures structured flow
-- Memory maintains context across runs
-
-This simulates a lightweight single-process multi-agent architecture.
-
----
+```json
+{
+  "userName": "Ashi",
+  "lastTask": "interview prep",
+  "completedTasks": []
+}
