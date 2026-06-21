@@ -2,26 +2,28 @@
 
 ## 📌 Overview
 
-This project is a modular Node.js-based AI agent system built using two starter frameworks:
+This project is a modular Node.js-based system that demonstrates a simple AI-agent style workflow using planning, execution, and memory handling.
+
+It is built using two starter components:
 
 - Starter 1: OpenClaw (Execution Layer)
-- Starter 2: Hermes (Planning & Orchestration Layer)
+- Starter 2: Hermes (Planning Layer)
 
-The system demonstrates a structured agent workflow where tasks are planned, executed, and stored with contextual memory.
+The system follows a structured pipeline where input is processed, broken into steps, executed, and stored with context.
 
 ---
 
 ## 🧠 System Architecture
 
-### 🔵 Starter 2 — Hermes (Planner / Brain Layer)
-- Handles task understanding and breakdown
-- Creates structured execution plans
-- Acts as the decision-making layer of the system
+### 🔵 Starter 2 — Hermes (Planner Layer)
+- Handles input interpretation and planning
+- Breaks tasks into structured steps
+- Coordinates overall workflow logic
 
 ### 🟢 Starter 1 — OpenClaw (Execution Layer)
-- Executes planned instructions
-- Runs defined skill-based logic
-- Produces final output
+- Executes logic defined by planner
+- Runs modular skill-based functions
+- Returns processed output
 
 ---
 
@@ -30,30 +32,30 @@ The system demonstrates a structured agent workflow where tasks are planned, exe
 - Node.js
 - JavaScript (ES6)
 - JSON (Memory storage)
-- File-based modular architecture
+- File-based modular system
 
 ---
 
 ## 🔄 Workflow
 
-Input → Hermes (Planner) → OpenClaw (Skills Execution) → Memory → Output
+Input → Planner (Hermes) → Skills Execution (OpenClaw) → Memory → Output
 
 ---
 
 ## 📁 Project Structure
 
-ai-agent-systems-suite/
+ai-agent-systems-suite
 
-├── starter2-hermes/
+├── starter2-hermes
 │   ├── index.js
 │   ├── planner.js
 │   ├── skills.js
 │   ├── memory.json
-│   └── skills/
-│
-├── starter1-openclaw/
-│   └── execution layer logic
-│
+│   └── skills
+
+├── starter1-openclaw
+│   └── execution logic
+
 └── README.md
 
 ---
@@ -61,55 +63,55 @@ ai-agent-systems-suite/
 ## 🧩 Core Modules
 
 ### planner.js
-Breaks input into structured steps for execution.
+Responsible for breaking input into structured steps for execution.
 
 ### skills.js
 Executes logic based on planned steps.
 
 ### memory.json
-Stores and retrieves contextual memory across runs.
+Stores simple contextual memory and retrieves previous state.
 
 ---
 
 ## 💾 Memory System
 
-The system uses a simple file-based memory mechanism.
+This system uses a file-based memory approach.
 
 Example:
 
 Input: "My name is Ashi"
-→ Stored in memory.json
+→ stored in memory.json
 
 Input: "What is my name?"
-→ Retrieved from memory
-→ Output: "Ashi"
+→ retrieved from memory
+→ output: stored value
 
 ---
 
 ## ⚙️ Skills System
 
-Skills are modular logic units triggered based on input type.
+Skills are simple modular functions that execute based on input type.
 
 Examples:
-- Greeting handler
+- Greeting handling
 - Text parsing
-- Data transformation
+- Basic transformation logic
 - Memory read/write operations
 
 Each skill:
-- Receives structured input
+- Takes input from planner
 - Processes logic independently
-- Returns output to workflow
+- Returns output
 
 ---
 
 ## 🔗 Agent Interaction Model
 
-- Hermes acts as the planner and orchestration layer
-- OpenClaw acts as the execution layer
-- Planner ensures structured breakdown before execution
+- Hermes handles planning and task breakdown
+- OpenClaw handles execution of tasks
+- Planner ensures structured flow
 - Memory maintains context across runs
 
-This represents a lightweight multi-agent architecture within a single Node.js system.
+This simulates a lightweight single-process multi-agent architecture.
 
 ---
