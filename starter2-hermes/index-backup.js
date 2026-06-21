@@ -1,13 +1,9 @@
 const fs = require("fs");
-const axios = require("axios");
 const { createPlan } = require("./planner");
 const { interviewPrep } = require("./skills");
 
 const LOG_FILE = "agent-log.txt";
 const MESSAGE_FILE = "agent-messages.txt";
-
-// 🔐 SAFE: use environment variable instead of hardcoding secret
-const SLACK_WEBHOOK = process.env.SLACK_WEBHOOK;
 
 // Load Memory
 let memory = JSON.parse(
@@ -30,25 +26,6 @@ function sendAgentMessage(message) {
   console.log(message);
 }
 
-// Slack Communication
-async function sendSlackMessage(message) {
-  if (!SLACK_WEBHOOK) {
-    console.log("Slack webhook not set. Skipping Slack message.");
-    return;
-  }
-
-  try {
-    await axios.post(SLACK_WEBHOOK, {
-      text: message
-    });
-
-    console.log("SLACK MESSAGE SENT");
-
-  } catch (error) {
-    console.log("Slack Error:", error.message);
-  }
-}
-
 console.log("=== HERMES AGENT ===");
 
 // Memory Recall
@@ -69,15 +46,15 @@ plan.forEach((step, index) => {
 console.log("\n=== SKILL OUTPUT ===");
 
 if (
-  memory.lastTask &&
-  memory.lastTask.toLowerCase().includes("interview")
+  memory.lastTask
+    .toLowerCase()
+    .includes("interview")
 ) {
   console.log(interviewPrep());
 
-  sendAgentMessage("Interview Preparation Skill Completed");
-
-  sendSlackMessage("Hermes Agent: Interview Preparation Skill Completed");
-
+  sendAgentMessage(
+    "Interview Preparation Skill Completed"
+  );
 } else {
   console.log("No matching skill found");
 }
@@ -88,7 +65,10 @@ memory.completedTasks.push({
   completedAt: new Date().toISOString()
 });
 
-console.log("\nCompleted Tasks:", memory.completedTasks.length);
+console.log(
+  "\nCompleted Tasks:",
+  memory.completedTasks.length
+);
 
 // Update Memory
 memory.lastRun = new Date().toISOString();
@@ -98,7 +78,7 @@ fs.writeFileSync(
   JSON.stringify(memory, null, 2)
 );
 
-// Log
+// Agent Log
 fs.appendFileSync(
   LOG_FILE,
   `[${new Date().toISOString()}] Hermes executed successfully\n`
@@ -110,33 +90,17 @@ console.log("User:", memory.userName);
 console.log("Current Task:", memory.lastTask);
 console.log("Status: Completed");
 
-// Slack Status
-sendSlackMessage(
-`Hermes Status:
-User: ${memory.userName}
-Task: ${memory.lastTask}
-Status: Completed`
-);
-
 // Demo Scheduler
 console.log("\n=== AUTONOMOUS CHECK ===");
 
 setTimeout(() => {
-
   console.log("\nChecking previous executions...");
-
   console.log(
     "Tasks completed:",
     memory.completedTasks.length
   );
 
-  sendSlackMessage(
-`Hermes Autonomous Check:
-Tasks Completed: ${memory.completedTasks.length}`
-  );
-
   console.log("\nFORCED STOP - DEMO MODE");
-
   process.exit(0);
 
 }, 5000);
